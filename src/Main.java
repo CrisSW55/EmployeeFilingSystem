@@ -1,120 +1,136 @@
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.sql.*;
 import javax.swing.*;
-import javax.swing.border.Border;
 
 
-public class Main{
+
+
+public class Main {
+
     public static void main(String[] args) throws SQLException {
-        //Obtains the monitors dimensions in pixels
+        //Initialize keyHandler class, so to check the keystrokes
+        KeyHandler kH = new KeyHandler();
+        //Initialize the current monitor's or screen's size in pixels
         Dimension windowSize = Toolkit.getDefaultToolkit().getScreenSize();
-        //Setup the frame
+        //Initialize frame
         JFrame frame = new JFrame("Employee Filing System");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(640,480);
-        //Centers the frame or window on the current monitor
-        frame.setLocation((windowSize.width/2)-frame.getWidth()/2,(windowSize.height/2)-frame.getHeight()/2);
-        frame.setLayout(new BorderLayout());
-        //Create J panel and it's labels!!!
-        JPanel panel0 = new JPanel();
-        //Added break lines
-        JLabel headerLabel = new JLabel("<html>Welcome new employee,<br/> we are excited you joining our team!</html>");
-        headerLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        panel0.add(headerLabel);
+        //Initialize components inside the frame
+        JLabel headerLabel = new JLabel("<html>Welcome new employee,<br/> we are excited you joining our team!</html>",SwingConstants.CENTER);
+        JPanel headerPanel = new JPanel(new BorderLayout());
 
-
-        JPanel panel = new JPanel(new GridBagLayout());
+        JPanel formPanel = new JPanel(new GridBagLayout());
+        //Initialize GridBagConstraints
         GridBagConstraints gbc = new GridBagConstraints();
+        //Initialize all components within the formPanel
+        JLabel formLabel = new JLabel("Please fill out employee form below: ");
 
-        JLabel label = new JLabel("Please fill out employee form below: ");
-        label.setFont(new Font("Serif ", Font.BOLD, 20));
+        JLabel fNLabel = new JLabel("first name: ");
+        JTextField fNText = new JTextField(15);
+        //JLabel fNLabel = new JLabel("");
+
+        JLabel lNLabel = new JLabel("last name: ");
+        JTextField lNText = new JTextField("",15);
+
+        JLabel emailLabel = new JLabel("email address: ");
+        JTextField emailText = new JTextField("",15);
+
+        JLabel hPayLabel = new JLabel("hourly pay: ");
+        JTextField hPayText = new JTextField("",15);
+
+        JLabel jTitleLabel = new JLabel("job title: ");
+        JTextField jTitleText = new JTextField("",15);
+
+        JButton submitBtn = new JButton("Submit");
+
+        //Setup headerPanel's layout and it's components
+        headerLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        headerPanel.add(headerLabel, BorderLayout.NORTH);
+
+        //Setup formPanel's layout and it's components, such as Textfield,JButton,and JLabel
+        formLabel.setFont(new Font("Serif ", Font.BOLD, 20));
         gbc.gridx = 0;
         gbc.gridy = 0;
-        panel.add(label,gbc);
+        formPanel.add(formLabel,gbc);
 
-        JLabel label2 = new JLabel("first name: ");
-        label2.setFont(new Font("Serif ", Font.BOLD, 20));
+        fNLabel.setFont(new Font("Serif ", Font.BOLD, 20));
         gbc.gridx = 0;
         gbc.gridy = 1;
-        panel.add(label2,gbc);
-
-        JTextField text = new JTextField("",15);
+        formPanel.add(fNLabel,gbc);
+        //Using Keyhandler and this textfield to properly update the textfield's text
+        fNText.addKeyListener(kH);
+        //fNText.add(textLabel);
         gbc.gridx = 1;
         gbc.gridy = 1;
-        panel.add(text,gbc);
+        formPanel.add(fNText,gbc);
 
-        JLabel label3 = new JLabel("last name: ");
-        label3.setFont(new Font("Serif ", Font.BOLD, 20));
+        lNLabel.setFont(new Font("Serif ", Font.BOLD, 20));
         gbc.gridx = 0;
         gbc.gridy = 2;
-        panel.add(label3,gbc);
-
-        JTextField text2 = new JTextField("",15);
+        formPanel.add(lNLabel,gbc);
         gbc.gridx = 1;
         gbc.gridy = 2;
-        panel.add(text2,gbc);
+        formPanel.add(lNText,gbc);
 
-        JLabel label4 = new JLabel("email address: ");
-        label4.setFont(new Font("Serif ", Font.BOLD, 20));
+        emailLabel.setFont(new Font("Serif ", Font.BOLD, 20));
         gbc.gridx = 0;
         gbc.gridy = 3;
-        panel.add(label4,gbc);
-
-        JTextField text3 = new JTextField("",15);
+        formPanel.add(emailLabel,gbc);
         gbc.gridx = 1;
         gbc.gridy = 3;
-        panel.add(text3,gbc);
+        formPanel.add(emailText,gbc);
 
-        JLabel label5 = new JLabel("hourly pay: ");
-        label5.setFont(new Font("Serif ", Font.BOLD, 20));
+        hPayLabel.setFont(new Font("Serif ", Font.BOLD, 20));
         gbc.gridx = 0;
         gbc.gridy = 4;
-        panel.add(label5,gbc);
-
-        JTextField text4 = new JTextField("",15);
+        formPanel.add(hPayLabel,gbc);
         gbc.gridx = 1;
         gbc.gridy = 4;
-        panel.add(text4,gbc);
+        formPanel.add(hPayText,gbc);
 
-        JLabel label6 = new JLabel("job title: ");
-        label6.setFont(new Font("Serif ", Font.BOLD, 20));
+        jTitleLabel.setFont(new Font("Serif ", Font.BOLD, 20));
         gbc.gridx = 0;
         gbc.gridy = 5;
-        panel.add(label6,gbc);
-
-        JTextField text5 = new JTextField("",15);
+        formPanel.add(jTitleLabel,gbc);
         gbc.gridx = 1;
         gbc.gridy = 5;
-        panel.add(text5,gbc);
+        formPanel.add(jTitleText,gbc);
 
-        JButton button = new JButton("Submit");
-        button.addActionListener(e -> {
-            if(!text.getText().isEmpty() && !text2.getText().isEmpty()
-                    && !text3.getText().isEmpty() &&
-            !text4.getText().isEmpty() && !text5.getText().isEmpty() ){
-                System.out.println("first name: " + text.getText());
-                System.out.println("last name: " + text2.getText());
-                System.out.println("email address: " + text3.getText());
-                System.out.println("hourly pay: " + text4.getText());
-                System.out.println("job title: " + text5.getText());
-                text.setText("");
-                text2.setText("");
-                text3.setText("");
-                text4.setText("");
-                text5.setText("");
+        //Added an actionListener for submitBtn,
+        //and resets the all Text field components within the formPanel to empty strings
+        submitBtn.addActionListener(e -> {
+            if(!fNText.getText().isEmpty() && !lNText.getText().isEmpty()
+                    && !emailText.getText().isEmpty() &&
+            !hPayText.getText().isEmpty() && !jTitleText.getText().isEmpty() ){
+                System.out.println("first name: " + fNText.getText());
+                System.out.println("last name: " + lNText.getText());
+                System.out.println("email address: " + emailText.getText());
+                System.out.println("hourly pay: " + hPayText.getText());
+                System.out.println("job title: " + jTitleText.getText());
+                fNText.setText("");
+                lNText.setText("");
+                emailText.setText("");
+                hPayText.setText("");
+                jTitleText.setText("");
             }
 
         });
         gbc.gridx = 1;
         gbc.gridy = 6;
-        panel.add(button,gbc);
+        formPanel.add(submitBtn,gbc);
 
-        frame.add(panel0,BorderLayout.NORTH);
-        frame.add(panel,BorderLayout.CENTER);
+        //Applied all frame requirements, such as initial startup size and position,
+        // with respect to the user's monitor's screen, seen at the center at startup
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(640,480);
+        //Centers the frame or window on the current monitor
+        frame.setLocation((windowSize.width/2)-frame.getWidth()/2,(windowSize.height/2)-frame.getHeight()/2);
+        frame.setLayout(new BorderLayout());
+        frame.add(headerPanel, BorderLayout.NORTH);
+        frame.add(formPanel,BorderLayout.CENTER);
         frame.setVisible(true);
+        frame.setFocusable(true);
 
+        //Below using the JDBC, a Jav API to connect to MySQL database!
 //        Connection connection = DriverManager.getConnection(
 //                "jdbc:mysql://localhost:3306/mydb",
 //                "user",
