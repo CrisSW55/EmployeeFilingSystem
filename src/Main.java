@@ -2,12 +2,11 @@ import java.awt.*;
 import java.sql.*;
 import javax.swing.*;
 
-
-
-
 public class Main {
 
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args)  throws  SQLException{
+        int new_employee_id = 0;
+        int last_EmployeeId = 0;
         //Initialize keyHandler class, so to check the keystrokes
         KeyHandler kH = new KeyHandler();
         //Initialize the current monitor's or screen's size in pixels
@@ -101,11 +100,13 @@ public class Main {
             if(!fNText.getText().isEmpty() && !lNText.getText().isEmpty()
                     && !emailText.getText().isEmpty() &&
             !hPayText.getText().isEmpty() && !jTitleText.getText().isEmpty() ){
+                System.out.println("New Employee Record:");
                 System.out.println("first name: " + fNText.getText());
                 System.out.println("last name: " + lNText.getText());
                 System.out.println("email address: " + emailText.getText());
                 System.out.println("hourly pay: " + hPayText.getText());
                 System.out.println("job title: " + jTitleText.getText());
+                submit_NewEmployeeRecord(fNText.getText(),lNText.getText(),emailText.getText(), Integer.parseInt(hPayText.getText()),jTitleText.getText());
                 fNText.setText("");
                 lNText.setText("");
                 emailText.setText("");
@@ -130,35 +131,79 @@ public class Main {
         frame.setVisible(true);
         frame.setFocusable(true);
 
-        //Below using the JDBC, a Jav API to connect to MySQL database!
-//        Connection connection = DriverManager.getConnection(
-//                "jdbc:mysql://localhost:3306/mydb",
-//                "user",
-//                "");
-//        try {
-//            Statement statement = connection.createStatement();
-//            ResultSet resultSet = statement.executeQuery("SELECT * FROM employees");
-//            String space = " | ";
-//            System.out.println("employee_id" + space +
-//                    "first_name"  + space +
-//                    "last_name"  + space +
-//                    "hourly_pay"  + space +
-//                    "hire_date" );
-//            while (resultSet.next()) {
-//                System.out.println(resultSet.getString("employee_id") + space +
-//                                   resultSet.getString("first_name")  + space +
-//                                    resultSet.getString("last_name")  + space +
-//                                    resultSet.getString("hourly_pay")  + space +
-//                                    resultSet.getString("hire_date") );
-//            }
-//
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-
+        //Below using the JDBC, a Java API to connect to MySQL database!
+        retrieveTableEmployee();
 
     }
 
+    public static void retrieveTableEmployee(){
+        try {
+            String url = "jdbc:mysql://localhost:3306/mydb";
+            Connection connection = DriverManager.getConnection(
+                    url, "yourUser", "yourPassword");
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM employees");
+            String space = " | ";
 
+            while (resultSet.next()) {
+                System.out.println(resultSet.getString("employee_id") + space+
+                        resultSet.getString("first_name")  + space +
+                        resultSet.getString("last_name")  + space +
+                        resultSet.getString("email_address")  + space +
+                        resultSet.getString("hourly_pay")  + space +
+                        resultSet.getString("job_title")  + space);
+
+
+            }
+            //Closing
+            resultSet.close();
+            statement.close();
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void submit_NewEmployeeRecord(String first_name, String last_name,String email_address,int hourly_pay,String job_title){
+        int last_EmployeeId = 0;
+        int new_employee_id = 0;
+        try {
+            //Start by connecting the java code with mydb
+            String url = "jdbc:mysql://localhost:3306/mydb";
+            Connection connection = DriverManager.getConnection(url, "yourUser", "yourPassword");
+
+            //This first statement is used to get the lastEmployeeId
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT employee_id FROM employees ORDER BY employee_id DESC LIMIT 1");
+
+            while (resultSet.next() ) {last_EmployeeId = resultSet.getInt("employee_id");}
+
+            //Close statement and resultStatement
+            statement.close();
+            resultSet.close();
+
+            //Displays the last and new employee id
+            //System.out.println("Last employee id: " + last_EmployeeId);
+            new_employee_id = new_employee_id + last_EmployeeId + 1;
+            //System.out.println("New employee id: " + new_employee_id);
+
+            // Create a PreparedStatement
+            String sql = "INSERT INTO employees VALUES ('  "+new_employee_id+" ',' "+first_name+" ',' "+last_name+" ',' "+email_address+" ',' "+hourly_pay+" ',' "+job_title+" ') ";
+            PreparedStatement pStatement = connection.prepareStatement(sql);
+            pStatement.executeUpdate(sql);
+
+            System.out.println("Inserting new record into the table...");
+            // Close the resources
+            pStatement.close();
+            connection.close();
+
+
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
 }
